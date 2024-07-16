@@ -93,6 +93,7 @@ def parse_scenes(df, num_rows):
     try:
         chapters = {}
         for index, row in df.iterrows():
+            week = row["Week"]
             arc = row["Arc"]
             chapter = row["Chapter"]
             setting = row["Location"]
@@ -105,7 +106,7 @@ def parse_scenes(df, num_rows):
             temp = row["Temperature"]
             
             if chapter not in chapters:
-                    chapters[chapter] = {'scenes': [], 'settings': [], 'scene_counter': 1, 'day': [], 'POV': '', 'description': '', 'time': [], 'weather': [], 'descriptions': [], 'uniform': [], 'arc': 1}
+                    chapters[chapter] = {'scenes': [], 'settings': [], 'scene_counter': 1, 'day': [], 'POV': '', 'description': '', 'time': [], 'weather': [], 'descriptions': [], 'uniform': [], 'arc': 1, 'week': []}
 
             chapters[chapter]['scenes'].append(chapters[chapter]['scene_counter'])
             chapters[chapter]['arc'] = arc
@@ -118,6 +119,8 @@ def parse_scenes(df, num_rows):
             chapters[chapter]['descriptions'].append(description)
             chapters[chapter]["POV"] = pov
             chapters[chapter]["temperature"] = temp
+            chapters[chapter]["week"].append(week)
+
                 
         logging.info(f"Successfully parsed {num_rows} scenes into {len(chapters)} chapters.")
                
@@ -153,6 +156,7 @@ def generate_markdown_content(chapters, tags, output_dir, am = True):
             settings = chapter_data["settings"]
             time = chapter_data["time"]
             temp = chapter_data["temperature"]
+            week = chapter_data["week"]
             
             markdown_content += f"## Scenes\n"
         
@@ -165,6 +169,7 @@ def generate_markdown_content(chapters, tags, output_dir, am = True):
                 markdown_content += f" - POV: {pov}\n"
                 markdown_content += f" - Date and Time: {time[i]}\n" 
                 markdown_content += f" - Day: {days[i]}\n"
+                markdown_content += f" - Week: {week[i]}\n"
                 markdown_content += f" - Temperature: {temp}\n"
                 markdown_content += f" - Weather: {weather[i]}\n"
                 markdown_content += f" - Uniform: {uniform[i]}\n\n"
