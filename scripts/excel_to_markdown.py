@@ -15,7 +15,8 @@ Optional Arguments:
     -l, --log_file         <str>        Path to the log file (default: log.log).
     -am, add_metadata      <bool>       Add metadata to .md file header? (default: False, requires --tags)
     -t, --tags             <str>        Tags to add to file header. Must be separated by comma and space (default: None).
-    -g, --generate_metrics <bool>       Generate overview metrics? (default: False) <NOT IMPLEMENTED YET. DO NOT USE>
+    -g, --generate_metrics <bool>       Generate descriptive statistics and metrics? (default: False, requires matplotlib).
+    -S, --save             <bool>       Save generated metrics? (default: False, requires -g to be True, does nothing otherwise).
 
 External Dependencies:
     - pandas
@@ -36,7 +37,7 @@ def setup_logging(log_file):
     """Sets up the logging configuration."""
     logging.basicConfig(
         filename=log_file,
-        level=logging.DEBUG,
+        level=logging.INFO,
         format='%(asctime)s.%(msecs)03d - %(levelname)s - %(filename)s->%(funcName)s():%(lineno)s - %(message)s',
         datefmt='%Y-%m-%d %H:%M:%S',
         filemode='w'
@@ -140,7 +141,6 @@ def generate_markdown_content(chapters, tags, output_dir, am = True):
             
             markdown_content = ''
 
-
             # add metadata
             if am == True:
                 markdown_content = add_metadata(markdown_content, pov = chapter_data["POV"], tags = ", ".join(tags), arc = chapter_data["arc"])
@@ -160,11 +160,9 @@ def generate_markdown_content(chapters, tags, output_dir, am = True):
             
             markdown_content += f"## Scenes\n"
         
-            
             for i in range(len(scenes)):
                 scene_number = i + 1
                 
-
                 markdown_content += f"### Scene {scene_number}\n\n"
                 markdown_content += f" - POV: {pov}\n"
                 markdown_content += f" - Date and Time: {time[i]}\n" 
@@ -178,7 +176,6 @@ def generate_markdown_content(chapters, tags, output_dir, am = True):
                 markdown_content += f" #### Setting:\n"
                 
                 parts = settings[i].split(". ")
-
 
                 for subpart in parts:
                     subsubparts = subpart.split(" - ")
@@ -224,11 +221,9 @@ def write_markdown(file_path, output_dir, content):
         logging.error(f"Error: An error occurred while saving the file '/{output_dir}/{file_path}.md': {e}")
         print(f"Error: An error occurred while saving the file '/{output_dir}/{file_path}.md': {e}")
         
-def generate_metrics(df):
+def generate_metrics(df, save, output_dir):
     
     days = df["Day"]
-    
-    print(days)
     
     # Count the occurrences of each unique string
     counter = Counter(days)
@@ -237,10 +232,17 @@ def generate_metrics(df):
     # Bar Chart
     plt.figure(figsize=(10, 5))
     plt.bar(labels, counts, color='skyblue')
-    plt.xlabel('Items')
+    plt.xlabel('Day of the Week')
     plt.ylabel('Count')
-    plt.title('Bar Chart of String Occurrences')
-    plt.show()
+    plt.title('Days of the Week')
+
+    if save == True:
+        if not os.path.exists(f"{output_dir}/images/"):
+            os.makedirs(f"{output_dir}/images/")
+        else:
+            pass
+        plt.savefig(f"{output_dir}/images/days.png")
+        plt.show()
 
 def parse_items(value):
     """For argparser to process comma-separated string."""
@@ -252,8 +254,10 @@ def main():
     parser.add_argument('output_dir', type=str, help="Path to the output directory.")
     parser.add_argument('-s', '--sheet', type=str, default=0, help="Sheet name or index to read from the Excel file (default: 0).")
     parser.add_argument('-l', '--log_file', type=str, default='log.log', help="Path to the log file (default: log.log).")
-    parser.add_argument('-am','--add_metadata', type = bool, default = "True", help = "Add metadata to file header? (default: False, requires --tags).")
+    parser.add_argument('-am','--add_metadata', type = bool, default = False, help = "Add metadata to file header? (default: False, requires --tags).")
     parser.add_argument('-t', '--tags', type = parse_items, help = "Tags to add to file header. (default: "")")
+    parser.add_argument('-g', '--generate_metrics', type = bool, default = False, help = "Generate descriptive statistics and metrics? (default: False, requires matplotlib).")
+    parser.add_argument('-S', '--save', type = bool, default = False, help = "Save generated metrics? (default: False, requires -g to be True, does nothing otherwise).")
     
     args = parser.parse_args()
     
@@ -269,6 +273,11 @@ def main():
     chapters = parse_scenes(df, num_rows = num_rows)
 
     generate_markdown_content(chapters, tags = args.tags, am = args.add_metadata, output_dir = args.output_dir)
+
+    if args.generate_metrics == True:
+        generate_metrics(df, args.save, args.output_dir)
+    else:
+        pass
     
     logging.info(f"Script complete. Excel file: '{args.input_file}' converted to {len(chapters)} .md files.")
     print(f"Script complete. Excel file: '{args.input_file}' converted to {len(chapters)} .md files.")
