@@ -1,3 +1,28 @@
+"""
+Tool Name: Excel-to-Markdown
+Description: This script converts a tabulated scene-by-scene plan of a novel into a chapter-by-chapter markdown-based plan.
+
+Usage:
+    python excel-to-markdown.py [options]
+
+Positional Arguments:
+    input_file              Path to the input Excel file.
+    output_dir              Path to the output directory.
+
+Optional Arguments:
+    -h, --help                          Show this help message and exit.
+    -s, --sheet            <str>        Sheet name or index to read from the Excel file (default: 0).
+    -l, --log_file         <str>        Path to the log file (default: log.log).
+    -am, add_metadata      <bool>       Add metadata to .md file header? (default: False, requires --tags)
+    -t, --tags             <str>        Tags to add to file header. Must be separated by comma and space (default: None).
+    -g, --generate_metrics <bool>       Generate overview metrics? (default: False) <NOT IMPLEMENTED YET. DO NOT USE>
+
+External Dependencies:
+    - pandas
+    - matplotlib (soft requirement. Only if generate_metrics is true)
+
+"""
+
 import pandas as pd
 import matplotlib.pyplot as plt
 import logging
@@ -101,7 +126,7 @@ def parse_scenes(df, num_rows):
         print(f"Error: An error occurred while parsing scenes: {e}")
         logging.error(f"Error: An error occurred while parsing scenes: {e}")
         
-def generate_markdown_content(chapters, tags, am = True):
+def generate_markdown_content(chapters, tags, output_dir, am = True):
     """Generates Markdown content from the parsed data."""
     
     logging.info(f"Generating .md markdown files for {len(chapters)} chapters.")
@@ -164,7 +189,7 @@ def generate_markdown_content(chapters, tags, am = True):
               
             logging.info(f"Chapter {chapter_key}, Scene {scene_number} created.") 
             
-            write_markdown(f"Chapter {chapter_key}", "markdown_output", markdown_content)              
+            write_markdown(f"Chapter {chapter_key}", output_dir = output_dir, content = markdown_content)              
     except Exception as e:
         logging.error(f"Error: An error occured while parsing Chapter {chapter_key}, Scene {scene_number}: {e}")
         print(f"Error: An error occured while parsing Chapter {chapter_key}, Scene {scene_number}: {e}")
@@ -183,7 +208,9 @@ def add_metadata(markdown_content, arc, pov, tags):
 def write_markdown(file_path, output_dir, content):
     """Writes a .md markdown file"""
     logging.info(f"Writing .md file at '/{output_dir}/{file_path}.md'")
-    
+    if not os.path.exists(output_dir):
+        os.makedirs(output_dir)
+
     try:
         with open(f"./{output_dir}/{file_path}.md", 'w') as file:
             file.write(content)
@@ -217,7 +244,7 @@ def parse_items(value):
 def main():
     parser = argparse.ArgumentParser(description="Convert excel planning sheet into .md for Obsidian")
     parser.add_argument('input_file', type=str, help="Path to the input Excel file.")
-    parser.add_argument('output_file', type=str, help="Path to the output directory.")
+    parser.add_argument('output_dir', type=str, help="Path to the output directory.")
     parser.add_argument('-s', '--sheet', type=str, default=0, help="Sheet name or index to read from the Excel file (default: 0).")
     parser.add_argument('-l', '--log_file', type=str, default='log.log', help="Path to the log file (default: log.log).")
     parser.add_argument('-am','--add_metadata', type = bool, default = "True", help = "Add metadata to file header? (default: False, requires --tags).")
@@ -236,7 +263,7 @@ def main():
 
     chapters = parse_scenes(df, num_rows = num_rows)
 
-    generate_markdown_content(chapters, tags = args.tags, am = args.add_metadata)
+    generate_markdown_content(chapters, tags = args.tags, am = args.add_metadata, output_dir = args.output_dir)
     
     logging.info(f"Script complete. Excel file: '{args.input_file}' converted to {len(chapters)} .md files.")
     print(f"Script complete. Excel file: '{args.input_file}' converted to {len(chapters)} .md files.")

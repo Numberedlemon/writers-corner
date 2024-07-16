@@ -1,3 +1,9 @@
-Plans/*
-logs/*
-markdown_output/*
+# Ignore all by default
+*
+
+# Except the following specific files
+!.gitignore
+!README.md
+
+# Include the following directories
+!scripts/
