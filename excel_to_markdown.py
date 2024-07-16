@@ -68,6 +68,7 @@ def parse_scenes(df, num_rows):
     try:
         chapters = {}
         for index, row in df.iterrows():
+            arc = row["Arc"]
             chapter = row["Chapter"]
             setting = row["Location"]
             uniform = row["Uniform"]
@@ -79,9 +80,10 @@ def parse_scenes(df, num_rows):
             temp = row["Temperature"]
             
             if chapter not in chapters:
-                    chapters[chapter] = {'scenes': [], 'settings': [], 'scene_counter': 1, 'day': [], 'POV': '', 'description': '', 'time': [], 'weather': [], 'descriptions': [], 'uniform': []}
+                    chapters[chapter] = {'scenes': [], 'settings': [], 'scene_counter': 1, 'day': [], 'POV': '', 'description': '', 'time': [], 'weather': [], 'descriptions': [], 'uniform': [], 'arc': 1}
 
             chapters[chapter]['scenes'].append(chapters[chapter]['scene_counter'])
+            chapters[chapter]['arc'] = arc
             chapters[chapter]['scene_counter'] += 1
             chapters[chapter]['day'].append(day)
             chapters[chapter]['settings'].append(setting)
@@ -110,9 +112,10 @@ def generate_markdown_content(chapters, tags, am = True):
             
             markdown_content = ''
 
+
             # add metadata
             if am == True:
-                markdown_content = add_metadata(markdown_content, pov = chapter_data["POV"], tags = ", ".join(tags))
+                markdown_content = add_metadata(markdown_content, pov = chapter_data["POV"], tags = ", ".join(tags), arc = chapter_data["arc"])
             
             markdown_content += f"# Chapter {chapter_key}\n"
             
@@ -166,12 +169,13 @@ def generate_markdown_content(chapters, tags, am = True):
         logging.error(f"Error: An error occured while parsing Chapter {chapter_key}, Scene {scene_number}: {e}")
         print(f"Error: An error occured while parsing Chapter {chapter_key}, Scene {scene_number}: {e}")
         
-def add_metadata(markdown_content, pov, tags):
+def add_metadata(markdown_content, arc, pov, tags):
             markdown_content += f'---\n'
             markdown_content += f'created: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}\n'
             markdown_content += f'generated_by: {os.path.basename(__file__)}\n'
             markdown_content += f'tags: {tags}\n'
             markdown_content += f'POV: {pov}\n'
+            markdown_content += f'Arc: {arc}\n'
             markdown_content += f'---\n\n'
 
             return markdown_content
