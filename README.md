@@ -16,7 +16,7 @@ This repository is home to a collection of scripts and tools I have and will dev
 
 Most of the tools and scripts are developed in Python, the latest release of which can be found [here](https://www.python.org/downloads/).
 
-For completeness, each script is accompanied by it's own metadata, which details specific requirements. If required, a requirements.txt will be provided as well for ease of use.
+For completeness, each script is accompanied by it's own metadata, which details specific requirements. If required, a requirements.txt will be provided as well for ease of use. I would recommend using a virtual environment with these scripts.
 
 ### Installation
 
@@ -32,10 +32,10 @@ git clone https://github.com/Numberedlemon/writers-corner
 cd writers-corner
 ```
 
- 3. Install requirements as per script header
+ 3. Install requirements as per script header.
 
 ```sh
-pip install -r \<requirements\>.txt
+pip install -r requirements.txt
 ```
 
 ## Scripts and Tools
