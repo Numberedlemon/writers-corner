@@ -4,6 +4,8 @@ import logging
 import argparse
 from collections import Counter
 import sys
+from datetime import datetime
+import os
 
 def setup_logging(log_file):
     """Sets up the logging configuration."""
@@ -97,7 +99,7 @@ def parse_scenes(df, num_rows):
         print(f"Error: An error occurred while parsing scenes: {e}")
         logging.error(f"Error: An error occurred while parsing scenes: {e}")
         
-def generate_markdown_content(chapters):
+def generate_markdown_content(chapters, tags, am = True):
     """Generates Markdown content from the parsed data."""
     
     logging.info(f"Generating .md markdown files for {len(chapters)} chapters.")
@@ -107,6 +109,10 @@ def generate_markdown_content(chapters):
         for chapter_key, chapter_data in chapters.items():
             
             markdown_content = ''
+
+            # add metadata
+            if am == True:
+                markdown_content = add_metadata(markdown_content, pov = chapter_data["POV"], tags = ", ".join(tags))
             
             markdown_content += f"# Chapter {chapter_key}\n"
             
@@ -160,6 +166,16 @@ def generate_markdown_content(chapters):
         logging.error(f"Error: An error occured while parsing Chapter {chapter_key}, Scene {scene_number}: {e}")
         print(f"Error: An error occured while parsing Chapter {chapter_key}, Scene {scene_number}: {e}")
         
+def add_metadata(markdown_content, pov, tags):
+            markdown_content += f'---\n'
+            markdown_content += f'created: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}\n'
+            markdown_content += f'generated_by: {os.path.basename(__file__)}\n'
+            markdown_content += f'tags: {tags}\n'
+            markdown_content += f'POV: {pov}\n'
+            markdown_content += f'---\n\n'
+
+            return markdown_content
+
 def write_markdown(file_path, output_dir, content):
     """Writes a .md markdown file"""
     logging.info(f"Writing .md file at '/{output_dir}/{file_path}.md'")
@@ -189,13 +205,19 @@ def generate_metrics(df):
     plt.ylabel('Count')
     plt.title('Bar Chart of String Occurrences')
     plt.show()
+
+def parse_items(value):
+    """For argparser to process comma-separated string."""
+    return [item.strip() for item in value.split(',')]
     
 def main():
     parser = argparse.ArgumentParser(description="Convert excel planning sheet into .md for Obsidian")
     parser.add_argument('input_file', type=str, help="Path to the input Excel file.")
     parser.add_argument('output_file', type=str, help="Path to the output directory.")
-    parser.add_argument('--sheet', type=str, default=0, help="Sheet name or index to read from the Excel file (default: 0).")
-    parser.add_argument('--log_file', type=str, default='log.log', help="Path to the log file (default: log.log).")
+    parser.add_argument('-s', '--sheet', type=str, default=0, help="Sheet name or index to read from the Excel file (default: 0).")
+    parser.add_argument('-l', '--log_file', type=str, default='log.log', help="Path to the log file (default: log.log).")
+    parser.add_argument('-am','--add_metadata', type = bool, default = "True", help = "Add metadata to file header? (default: False, requires --tags).")
+    parser.add_argument('-t', '--tags', type = parse_items, help = "Tags to add to file header. (default: "")")
     
     args = parser.parse_args()
     
@@ -210,7 +232,7 @@ def main():
 
     chapters = parse_scenes(df, num_rows = num_rows)
 
-    generate_markdown_content(chapters)
+    generate_markdown_content(chapters, tags = args.tags, am = args.add_metadata)
     
     logging.info(f"Script complete. Excel file: '{args.input_file}' converted to {len(chapters)} .md files.")
     print(f"Script complete. Excel file: '{args.input_file}' converted to {len(chapters)} .md files.")
