@@ -32,15 +32,15 @@ git clone https://github.com/Numberedlemon/writers-corner
 cd writers-corner
 ```
 
- 3. Install requirements as per script metadata.
+ 3. Install requirements as per script header
 
 ```sh
-pip install -r requirements.txt
+pip install -r \<requirements\>.txt
 ```
 
 ## Scripts and Tools
 
 ### Excel-to-Markdown Converter
 
-A tool for converting a tabulated scene-by-scene plan of a novel or story into a markdown-based chapter-by-chapter plan. For more information on this script, it's intended use, see ```about_excel_to_markdown.txt```.
+A tool for converting a tabulated scene-by-scene plan of a novel or story into a markdown-based chapter-by-chapter plan. For more information on this script, it's intended use, see the header of ```excel_to_markdown.py```
 
