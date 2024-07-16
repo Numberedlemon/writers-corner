@@ -70,7 +70,7 @@ def parse_scenes(df, num_rows):
         for index, row in df.iterrows():
             chapter = row["Chapter"]
             setting = row["Location"]
-            hogwarts = row["Hogwarts Uniform"]
+            uniform = row["Uniform"]
             time = row["Time"]
             weather = row["Weather"]
             day = row["Day"]
@@ -79,13 +79,13 @@ def parse_scenes(df, num_rows):
             temp = row["Temperature"]
             
             if chapter not in chapters:
-                    chapters[chapter] = {'scenes': [], 'settings': [], 'scene_counter': 1, 'day': [], 'POV': '', 'description': '', 'time': [], 'weather': [], 'descriptions': [], 'hogwarts': []}
+                    chapters[chapter] = {'scenes': [], 'settings': [], 'scene_counter': 1, 'day': [], 'POV': '', 'description': '', 'time': [], 'weather': [], 'descriptions': [], 'uniform': []}
 
             chapters[chapter]['scenes'].append(chapters[chapter]['scene_counter'])
             chapters[chapter]['scene_counter'] += 1
             chapters[chapter]['day'].append(day)
             chapters[chapter]['settings'].append(setting)
-            chapters[chapter]['hogwarts'].append(hogwarts)
+            chapters[chapter]['uniform'].append(uniform)
             chapters[chapter]['weather'].append(weather)
             chapters[chapter]['time'].append(time)
             chapters[chapter]['descriptions'].append(description)
@@ -120,7 +120,7 @@ def generate_markdown_content(chapters, tags, am = True):
             days = chapter_data["day"]
             descriptions = chapter_data["descriptions"]
             pov = chapter_data["POV"]
-            hogwarts = chapter_data["hogwarts"]
+            uniform = chapter_data["uniform"]
             weather = chapter_data["weather"]
             settings = chapter_data["settings"]
             time = chapter_data["time"]
@@ -139,7 +139,7 @@ def generate_markdown_content(chapters, tags, am = True):
                 markdown_content += f" - Day: {days[i]}\n"
                 markdown_content += f" - Temperature: {temp}\n"
                 markdown_content += f" - Weather: {weather[i]}\n"
-                markdown_content += f" - Hogwarts Uniform: {hogwarts[i]}\n\n"
+                markdown_content += f" - Uniform: {uniform[i]}\n\n"
                 markdown_content += f" - Description: {descriptions[i]}\n\n"
                 
                 markdown_content += f" #### Setting:\n"
