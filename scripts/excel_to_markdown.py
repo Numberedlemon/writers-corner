@@ -224,6 +224,7 @@ def write_markdown(file_path, output_dir, content):
 def generate_metrics(df, save, output_dir):
     
     days = df["Day"]
+    weather = df["Weather"]
     
     # Count the occurrences of each unique string
     counter = Counter(days)
@@ -242,6 +243,24 @@ def generate_metrics(df, save, output_dir):
         else:
             pass
         plt.savefig(f"{output_dir}/images/days.png")
+        plt.show()
+
+    counter = Counter(weather)
+    labels,counts = zip(*counter.items())
+    print(labels)
+
+    # Bar Chart
+    plt.figure(figsize=(10, 5))
+    plt.pie(list(counts), labels = list(labels), autopct='%1.1f%%')
+    plt.xlabel('Weather Condition')
+    plt.title('Weather')
+
+    if save == True:
+        if not os.path.exists(f"{output_dir}/images/"):
+            os.makedirs(f"{output_dir}/images/")
+        else:
+            pass
+        plt.savefig(f"{output_dir}/images/weather.png")
         plt.show()
 
 def parse_items(value):

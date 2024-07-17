@@ -8,7 +8,7 @@ This repository is home to a collection of scripts and tools I have and will dev
 - [Getting Started](#getting-started)
 - [Scripts and Tools](#scripts-and-tools)
 
-## Introduction
+## Introduction - UNDER CONSTRUCTION
 
 ## Getting Started
 
