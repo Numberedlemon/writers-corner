@@ -21,6 +21,7 @@ Optional Arguments:
 External Dependencies:
     - pandas
     - matplotlib (soft requirement. Only if generate_metrics is true)
+    - openpyxl
 
 """
 
@@ -247,8 +248,6 @@ def generate_metrics(df, save, output_dir):
 
     counter = Counter(weather)
     labels,counts = zip(*counter.items())
-    print(labels)
-
     # Bar Chart
     plt.figure(figsize=(10, 5))
     plt.pie(list(counts), labels = list(labels), autopct='%1.1f%%')
