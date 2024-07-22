@@ -6,4 +6,5 @@
 !README.md
 
 # Include the following directories
-!scripts/
+!scripts/*
+!scripts\word_counts\*
