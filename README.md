@@ -44,3 +44,13 @@ pip install -r requirements.txt
 
 A tool for converting a tabulated scene-by-scene plan of a novel or story into a markdown-based chapter-by-chapter plan. For more information on this script, it's intended use, see the header of ```excel_to_markdown.py```
 
+### Common Words Tool
+
+This simple script extracts the 100 most common words in your text, supplied by .csv summary files which can provided by an editor such as TeXstudio. It can also display a bar chart for visualisation of this data.
+
+### Word Count Dashboard
+
+This tool allows for tracking of scene counts within chapters, their associated word counts, and predicted word counts at scene number milestones. 
+
+This tool will eventually be linked to another tool which will act as a kind of database management script.
+
