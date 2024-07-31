@@ -1,10 +1,5 @@
 # Ignore all by default
-*
-
-# Except the following specific files
-!.gitignore
-!README.md
-
-# Include the following directories
-!scripts/*
-!scripts\word_counts\*
+markdown_content/*
+logs/*
+Plans/*
+words/*
